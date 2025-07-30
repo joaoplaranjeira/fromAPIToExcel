@@ -30,22 +30,37 @@ public class Root
     public int total { get; set; }
 }
 
+public class RootDetail
+{
+    public string title { get; set; }
+    public Resource resource { get; set; }
+}
+
 class Program
 {
     static async Task Main(string[] args)
     {
         List<string> attributes = new List<string>
         {
+            "socio",
             "last_paid_quote",
             "birthdate",
             "athlete",
             "category",
             "subscription_date",
-            "payment_local"
+            "payment_local",
+            "gender",
+            "monthly_fee"
         };
+
+        List<string> attributesDetails = new List<string>
+        {
+            "gender"
+        };
+
         int page = 1;
         string apiUrl = string.Empty;
-        string cookieValue = "cookie=XSRF-TOKEN=eyJpdiI6ImNORXcyWDY3cXcwMk0xdzRxckkvWVE9PSIsInZhbHVlIjoiK0VrUWhQak9iNlcrVzQ1Y2xzY003RmtUU08vUStjK0x2VHFzam95eWdaSDc1cmlHRWt1T256cmpqcVRFazVUUXE4UW1QRGY3Q2RaTXg1UWNsZlI1RjkvTklQUWM2cjlsMUs2V1MxTE9TRWJWSzNuUUtUZGRvVTdtMzVpaGNINkEiLCJtYWMiOiI4M2VkYjE3MzQ5Njg0MzRlMDczNmIxMjViMDEzODUxYzQ0NTFkYTNmNmJiMzQ4ZGUwMDJlZmE0MTA3MjU0YmZhIiwidGFnIjoiIn0%3D; leca_futebol_clube_area_de_membros_session=eyJpdiI6Im55VTBMSmVSN09NV09zb2dsaWRNb1E9PSIsInZhbHVlIjoiWnhXZUI2cng3WVdjWFRMK2tXOEVPZkNkY2xUT2ZGTkFPeU5iZWdrUjZ0Vm95SjdFVnJzeXpqZW42UEthMkJnV1QxM1NsZEZxZFZUUEZXampMOHZCM3FwVEJNT1RZUGcvY2dsT2NCbHdVVlBhaUFRZEFLT0NJR1M3bUZFRzZRVW8iLCJtYWMiOiI3MDU2OTA5NzJhNWFiMWY2NjIyZmUxMGFlMjI5ODA5NTBmZmYyNzVmMGIwYTY2NjNhNjE0N2NiZGM4ZWVmOWQ0IiwidGFnIjoiIn0%3D";           // <-- Substituir
+        string cookieValue = "XSRF-TOKEN=eyJpdiI6IjFhcXNmUWxreG1KdEV2elRlZzQvYmc9PSIsInZhbHVlIjoiSUthL01ZbEJPMjdSUkNNS0RCK3dUeTV5WEVQQTdGQzRyS2lyQlVkd1pjeTQzZzhkZEdYRkFuMTBsTDlnN0dlblJDWUdBL0pZLzVHWXE2c21hcnYva1FKaXJQUGF3ZlFKOG0zY21tTGxqcVJNeGd6bWhscmxDaUpFUUUyN05hSTciLCJtYWMiOiIxZjYzYTZkOGNiMTgyMDcwMWNjZjc4MDUxZjgwZmQ4MGEzNTkxYTFiZTViOGEzMWQ0NDFiMDJlZjUxMWRjMDUyIiwidGFnIjoiIn0%3D; leca_futebol_clube_area_de_membros_session=eyJpdiI6IndxclkrVXhvNFFJbGtoL1NoU3ZFd1E9PSIsInZhbHVlIjoiVlVja3piWFF2UVp3djEyL1pxbDBxZzI3b0E2MTJNaFAvT2lBaDk4N3NPdnBua0pKRDNJNm5MbDEwQzVjMzFZUHRvMVpCQlhzeUxNNmVvQnpHL1BNRjEvZFdISDlIaEl5YWZ4emIxSHhYV0ErRTRoeDNUSVBwc0JoVnFwN2VGengiLCJtYWMiOiI0MWIzYzk3ZjhmZDg5NzcyZWU5MjMwNmIzMGJmNDc5OWI3ZDlhN2Y1NWUzYjhjMWE2MWQzNTA1MDIwODQ3YjRhIiwidGFnIjoiIn0%3D; _ga_4XLXQY2C2R=GS2.1.s1753806386$o1$g1$t1753806624$j56$l0$h0; _ga=GA1.1.722021716.1753806387";           // <-- Substituir
         bool hasRecords = true;
         using var client = new HttpClient();
         client.DefaultRequestHeaders.Add("Cookie", cookieValue);
@@ -69,13 +84,25 @@ class Program
 
             if (root != null && root.resources != null)
             {
+                foreach (var resource in root.resources)
+                {
+                    // Obter detalhes de cada recurso
+                    var resourceDetails = await GetResourceDetails(client, resource.id.value);
+                    if (resourceDetails != null)
+                    {
+                        resource.fields.AddRange(resourceDetails.fields.Where(f => attributesDetails.Contains(f.attribute)));
+                    }
+                    Console.WriteLine("⏳ A aguardar 1 segundos para obter o detalhe...");
+                    await Task.Delay(1000);
+                }
+
                 allResources.AddRange(root.resources);
                 page++;
 
                 if (!string.IsNullOrEmpty(root.next_page_url))
                 {
-                    Console.WriteLine("⏳ A aguardar 5 segundos...");
-                    await Task.Delay(5000);
+                    Console.WriteLine("⏳ A aguardar 2 segundos...");
+                    await Task.Delay(2000);
                 }
                 else
                 {
@@ -91,6 +118,18 @@ class Program
 
         ExportToExcel(allResources, attributes);
         Console.WriteLine("✅ Excel gerado com sucesso!");
+    }
+
+    static async Task<Resource> GetResourceDetails(HttpClient client, int resourceId)
+    {
+        var detailUrl = $"https://members.lecafutebolclube.com/nova-api/members/{resourceId}";
+        var response = await client.GetAsync(detailUrl);
+        response.EnsureSuccessStatusCode();
+
+        var json = await response.Content.ReadAsStringAsync();
+        var rootDetail = JsonSerializer.Deserialize<RootDetail>(json);
+
+        return rootDetail?.resource;
     }
 
     static void ExportToExcel(List<Resource> resources, List<string> attributes)

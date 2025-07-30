@@ -22,3 +22,4 @@
 /Users/joaolaranjeira/Projects/fromAPIToExcel/obj/Debug/net8.0/fromAPIToExcel.pdb
 /Users/joaolaranjeira/Projects/fromAPIToExcel/obj/Debug/net8.0/fromAPIToExcel.genruntimeconfig.cache
 /Users/joaolaranjeira/Projects/fromAPIToExcel/obj/Debug/net8.0/ref/fromAPIToExcel.dll
+/Users/joaolaranjeira/Projects/fromAPIToExcel/obj/Debug/net8.0/fromAPIToExcel.sourcelink.json
