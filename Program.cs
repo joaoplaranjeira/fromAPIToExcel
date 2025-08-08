@@ -55,7 +55,7 @@ class Program
 
         List<string> attributesDetails = new List<string>
         {
-            "gender"
+            //"gender"
         };
 
         int page = 1;
@@ -86,14 +86,17 @@ class Program
             {
                 foreach (var resource in root.resources)
                 {
-                    // Obter detalhes de cada recurso
+                    if (attributesDetails != null && attributesDetails.Count() > 0)
+                    {
+                        // Obter detalhes de cada recurso
                     var resourceDetails = await GetResourceDetails(client, resource.id.value);
                     if (resourceDetails != null)
                     {
                         resource.fields.AddRange(resourceDetails.fields.Where(f => attributesDetails.Contains(f.attribute)));
                     }
                     Console.WriteLine("⏳ A aguardar 1 segundos para obter o detalhe...");
-                    await Task.Delay(1000);
+                    await Task.Delay(1000);    
+                    }
                 }
 
                 allResources.AddRange(root.resources);
