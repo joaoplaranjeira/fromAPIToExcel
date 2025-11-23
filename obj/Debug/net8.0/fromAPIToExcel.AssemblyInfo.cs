@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("fromAPIToExcel")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6c41d99c462ee24a9fdd6c5f58521f0eb29513c9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1441f039bb2fdf9ba864aa6cb6eefc079449f98c")]
 [assembly: System.Reflection.AssemblyProductAttribute("fromAPIToExcel")]
 [assembly: System.Reflection.AssemblyTitleAttribute("fromAPIToExcel")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
