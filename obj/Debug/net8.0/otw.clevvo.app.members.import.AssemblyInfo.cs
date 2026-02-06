@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("otw.clevvo.app.members.import")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0561e7b4dfd154006e79267e49f9550008f2b753")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f0d548103b0a212b8641bdfc048c1fcaa6128fb1")]
 [assembly: System.Reflection.AssemblyProductAttribute("otw.clevvo.app.members.import")]
 [assembly: System.Reflection.AssemblyTitleAttribute("otw.clevvo.app.members.import")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

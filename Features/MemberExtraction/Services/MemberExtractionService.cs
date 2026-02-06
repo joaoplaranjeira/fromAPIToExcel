@@ -100,6 +100,8 @@ public class MemberExtractionService : IMemberExtractionService
                 // Process filtered members and get details if needed
                 foreach (var member in filteredMembers)
                 {
+                    AddPhotoBaseUrl(member);
+                    
                     if (_settings.DetailAttributes.Any() &&
                         member.Fields.FirstOrDefault(f => f.Attribute == "category")?.Value?.ToString() != "Atleta")
                     {
@@ -172,6 +174,19 @@ public class MemberExtractionService : IMemberExtractionService
                 .Where(f => _settings.DetailAttributes.Contains(f.Attribute));
             
             member.Fields.AddRange(additionalFields);
+        }
+    }
+
+    private void AddPhotoBaseUrl(Member member)
+    {
+        var photoField = member.Fields.FirstOrDefault(f => f.Attribute == "photo");
+        if (photoField?.Value != null && !string.IsNullOrWhiteSpace(photoField.Value.ToString()))
+        {
+            var photoValue = photoField.Value.ToString()!;
+            if (!photoValue.StartsWith("http"))
+            {
+                photoField.Value = $"https://members.lecafutebolclube.com/storage/{photoValue}";
+            }
         }
     }
 

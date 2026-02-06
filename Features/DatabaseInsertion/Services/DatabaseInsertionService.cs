@@ -211,15 +211,10 @@ public class DatabaseInsertionService : IDatabaseInsertionService
         // The photo field is a JsonElement with nested properties
         try
         {
-            var photoJson = photoField.Value.ToString();
-            if (string.IsNullOrEmpty(photoJson)) return null;
+            var photoUrl = photoField.Value.ToString();
+            if (string.IsNullOrEmpty(photoUrl)) return null;
             
-            // Try to parse as JSON to get previewUrl
-            using var jsonDoc = System.Text.Json.JsonDocument.Parse(photoJson);
-            if (jsonDoc.RootElement.TryGetProperty("previewUrl", out var previewUrlElement))
-            {
-                return previewUrlElement.GetString();
-            }
+            return photoUrl;
         }
         catch (Exception ex)
         {
@@ -270,22 +265,6 @@ public class DatabaseInsertionService : IDatabaseInsertionService
             _logger.LogError(ex, "❌ Erro ao obter membros existentes da base de dados. A continuar sem validação.");
             return new List<MemberDto>();
         }
-    }
-
-    private bool HasMemberDataChanged(MemberDto newData, MemberDto existingData)
-    {
-        return newData.FullName != existingData.FullName ||
-               newData.BirthDate != existingData.BirthDate ||
-               newData.Email != existingData.Email ||
-               newData.MobilePhone != existingData.MobilePhone ||
-               newData.Address != existingData.Address ||
-               newData.Gender != existingData.Gender ||
-               newData.Type != existingData.Type ||
-               newData.MonthlyFee != existingData.MonthlyFee ||
-               newData.JoinedUs != existingData.JoinedUs ||
-               newData.LastQuotaPaid != existingData.LastQuotaPaid ||
-               newData.PaymentLocal != existingData.PaymentLocal ||
-               newData.PhotoUrl != existingData.PhotoUrl;
     }
 
     private List<string> GetChangedFields(MemberDto newData, MemberDto existingData)
