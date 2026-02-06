@@ -1630,11 +1630,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/joaolaranjeira/Projects/fromAPIToExcel/fromAPIToExcel.csproj",
-      "projectName": "fromAPIToExcel",
-      "projectPath": "/Users/joaolaranjeira/Projects/fromAPIToExcel/fromAPIToExcel.csproj",
+      "projectUniqueName": "/Users/joaolaranjeira/Projects/otw.clevvo.app.members.import/otw.clevvo.app.members.import.csproj",
+      "projectName": "otw.clevvo.app.members.import",
+      "projectPath": "/Users/joaolaranjeira/Projects/otw.clevvo.app.members.import/otw.clevvo.app.members.import.csproj",
       "packagesPath": "/Users/joaolaranjeira/.nuget/packages/",
-      "outputPath": "/Users/joaolaranjeira/Projects/fromAPIToExcel/obj/",
+      "outputPath": "/Users/joaolaranjeira/Projects/otw.clevvo.app.members.import/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/joaolaranjeira/.nuget/NuGet/NuGet.Config"

@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace fromAPIToExcel.Models.DTOs;
+namespace Otw.Clevvo.App.Members.Import.Models.DTOs;
 
 public class MemberDto
 {
@@ -48,4 +48,7 @@ public class MemberDto
     
     [JsonPropertyName("age")]
     public int Age { get; set; }
+    
+    [JsonPropertyName("photoUrl")]
+    public string? PhotoUrl { get; set; }
 }

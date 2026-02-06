@@ -1,11 +1,11 @@
 using Microsoft.Extensions.Logging;
-using fromAPIToExcel.Application.Contracts;
-using fromAPIToExcel.Features.MemberExtraction.Contracts;
-using fromAPIToExcel.Features.DatabaseInsertion.Contracts;
-using fromAPIToExcel.Features.ExcelExport.Contracts;
-using fromAPIToExcel.Models;
+using Otw.Clevvo.App.Members.Import.Application.Contracts;
+using Otw.Clevvo.App.Members.Import.Features.MemberExtraction.Contracts;
+using Otw.Clevvo.App.Members.Import.Features.DatabaseInsertion.Contracts;
+using Otw.Clevvo.App.Members.Import.Features.ExcelExport.Contracts;
+using Otw.Clevvo.App.Members.Import.Models;
 
-namespace fromAPIToExcel.Application.Services;
+namespace Otw.Clevvo.App.Members.Import.Application.Services;
 
 public class ApplicationService : IApplicationService
 {
@@ -49,6 +49,8 @@ public class ApplicationService : IApplicationService
             var extractionResult = await _memberExtractionService.ExtractAllMembersAsync(startFromMemberCode);
             _summary.TotalMembersExtracted = extractionResult.Members.Count;
             _summary.ExtractionPages = extractionResult.PagesProcessed;
+            _summary.GendersDeduced = extractionResult.GenderDeductions.Count;
+            _summary.GenderDeductions = extractionResult.GenderDeductions;
             
             if (!extractionResult.Members.Any())
             {

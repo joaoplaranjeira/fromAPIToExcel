@@ -1,4 +1,4 @@
-namespace fromAPIToExcel.Models;
+namespace Otw.Clevvo.App.Members.Import.Models;
 
 public class Field
 {

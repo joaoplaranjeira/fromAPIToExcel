@@ -1,4 +1,4 @@
-# From API to Excel/Database
+# OTW Clevvo - Importação de Membros
 
 Uma aplicação .NET 8 estruturada com Feature Driven Design (FDD) para extrair dados de membros de uma API e exportá-los para Excel ou inserir numa base de dados através de um endpoint.
 
@@ -7,7 +7,7 @@ Uma aplicação .NET 8 estruturada com Feature Driven Design (FDD) para extrair 
 A aplicação segue os princípios do Feature Driven Design, organizando o código por funcionalidades:
 
 ```
-fromAPIToExcel/
+otw.clevvo.app.members.import/
 ├── Models/                          # Modelos de domínio
 │   ├── Member.cs                   # Entidades principais (Member, Field, Id)
 │   └── DTOs/                       # Data Transfer Objects

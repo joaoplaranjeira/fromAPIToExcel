@@ -1,7 +1,7 @@
-using fromAPIToExcel.Models;
-using fromAPIToExcel.Models.DTOs;
+using Otw.Clevvo.App.Members.Import.Models;
+using Otw.Clevvo.App.Members.Import.Models.DTOs;
 
-namespace fromAPIToExcel.Features.DatabaseInsertion.Contracts;
+namespace Otw.Clevvo.App.Members.Import.Features.DatabaseInsertion.Contracts;
 
 public interface IDatabaseInsertionService
 {

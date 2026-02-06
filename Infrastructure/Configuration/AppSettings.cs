@@ -1,4 +1,4 @@
-namespace fromAPIToExcel.Infrastructure.Configuration;
+namespace Otw.Clevvo.App.Members.Import.Infrastructure.Configuration;
 
 public class ApiSettings
 {

@@ -1,6 +1,6 @@
-using fromAPIToExcel.Models;
+using Otw.Clevvo.App.Members.Import.Models;
 
-namespace fromAPIToExcel.Features.ExcelExport.Contracts;
+namespace Otw.Clevvo.App.Members.Import.Features.ExcelExport.Contracts;
 
 public interface IExcelExportService
 {

@@ -19,6 +19,7 @@ public class MemberDto
     public DateTime JoinedUs { get; set; }
     public DateTime? LastQuotaPaid { get; set; }
     public string? PaymentLocal { get; set; }
+    public string? PhotoUrl { get; set; }
 }
 ```
 
@@ -38,6 +39,7 @@ public class MemberDto
 | `subscription_date` | `JoinedUs` | `DateTime` | Parsed with validation |
 | `last_paid_quote` | `LastQuotaPaid` | `DateTime?` | Optional, parsed with validation |
 | `payment_local` | `PaymentLocal` | `string?` | Optional field |
+| `photo.previewUrl` | `PhotoUrl` | `string?` | Extracted from photo JSON field |
 
 ## Data Conversion Features
 
@@ -57,6 +59,12 @@ public class MemberDto
 - Removes "#" characters from member names
 - Trims whitespace from names
 - Handles null/empty values gracefully
+
+### 📷 **Photo URL Extraction**
+- Parses the complex photo field JSON structure
+- Extracts the `previewUrl` property
+- Handles missing or invalid photo data gracefully
+- Returns `null` if photo is not available
 
 ## Error Handling
 
@@ -94,7 +102,8 @@ private DateTime ParseDateField(Member member, string attributeName, DateTime de
       "monthlyFee": 25.50,
       "joinedUs": "2020-01-15T00:00:00",
       "lastQuotaPaid": "2024-10-01T00:00:00",
-      "paymentLocal": "Sede"
+      "paymentLocal": "Sede",
+      "photoUrl": "https://members.lecafutebolclube.com/storage/avatares/PY1xokjff7XPaN5urhPCergLrELjm3ERIn6ABsgL.jpg"
     }
   ]
 }

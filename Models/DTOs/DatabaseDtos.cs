@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace fromAPIToExcel.Models.DTOs;
+namespace Otw.Clevvo.App.Members.Import.Models.DTOs;
 
 public class DatabaseInsertRequest
 {

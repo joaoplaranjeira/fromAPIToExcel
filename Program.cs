@@ -1,16 +1,16 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using fromAPIToExcel.Application.Contracts;
-using fromAPIToExcel.Application.Services;
-using fromAPIToExcel.Features.MemberExtraction.Contracts;
-using fromAPIToExcel.Features.MemberExtraction.Services;
-using fromAPIToExcel.Features.DatabaseInsertion.Contracts;
-using fromAPIToExcel.Features.DatabaseInsertion.Services;
-using fromAPIToExcel.Features.ExcelExport.Contracts;
-using fromAPIToExcel.Features.ExcelExport.Services;
-using fromAPIToExcel.Infrastructure.Configuration;
-using fromAPIToExcel.Infrastructure.Services;
+using Otw.Clevvo.App.Members.Import.Application.Contracts;
+using Otw.Clevvo.App.Members.Import.Application.Services;
+using Otw.Clevvo.App.Members.Import.Features.MemberExtraction.Contracts;
+using Otw.Clevvo.App.Members.Import.Features.MemberExtraction.Services;
+using Otw.Clevvo.App.Members.Import.Features.DatabaseInsertion.Contracts;
+using Otw.Clevvo.App.Members.Import.Features.DatabaseInsertion.Services;
+using Otw.Clevvo.App.Members.Import.Features.ExcelExport.Contracts;
+using Otw.Clevvo.App.Members.Import.Features.ExcelExport.Services;
+using Otw.Clevvo.App.Members.Import.Infrastructure.Configuration;
+using Otw.Clevvo.App.Members.Import.Infrastructure.Services;
 
 class Program
 {
@@ -116,7 +116,7 @@ class Program
 
     private static void ShowHelp()
     {
-        Console.WriteLine("🚀 fromAPIToExcel - Extração e Processamento de Membros");
+        Console.WriteLine("🚀 OTW Clevvo - Importação de Membros");
         Console.WriteLine();
         Console.WriteLine("Utilização:");
         Console.WriteLine("  dotnet run [opções]");

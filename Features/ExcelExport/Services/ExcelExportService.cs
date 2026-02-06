@@ -1,11 +1,11 @@
 using ClosedXML.Excel;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using fromAPIToExcel.Features.ExcelExport.Contracts;
-using fromAPIToExcel.Infrastructure.Configuration;
-using fromAPIToExcel.Models;
+using Otw.Clevvo.App.Members.Import.Features.ExcelExport.Contracts;
+using Otw.Clevvo.App.Members.Import.Infrastructure.Configuration;
+using Otw.Clevvo.App.Members.Import.Models;
 
-namespace fromAPIToExcel.Features.ExcelExport.Services;
+namespace Otw.Clevvo.App.Members.Import.Features.ExcelExport.Services;
 
 public class ExcelExportService : IExcelExportService
 {

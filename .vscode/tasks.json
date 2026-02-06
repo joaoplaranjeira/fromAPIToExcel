@@ -7,7 +7,7 @@
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/fromAPIToExcel.csproj"
+        "${workspaceFolder}/otw.clevvo.app.members.import.csproj"
       ],
       "problemMatcher": "$msCompile"
     }

@@ -6,7 +6,7 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v8.0": {
-      "fromAPIToExcel/1.0.0": {
+      "otw.clevvo.app.members.import/1.0.0": {
         "dependencies": {
           "ClosedXML": "0.105.0",
           "Microsoft.Extensions.Configuration": "8.0.0",
@@ -18,7 +18,7 @@
           "Newtonsoft.Json": "13.0.3"
         },
         "runtime": {
-          "fromAPIToExcel.dll": {}
+          "otw.clevvo.app.members.import.dll": {}
         }
       },
       "ClosedXML/0.105.0": {
@@ -366,7 +366,7 @@
     }
   },
   "libraries": {
-    "fromAPIToExcel/1.0.0": {
+    "otw.clevvo.app.members.import/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

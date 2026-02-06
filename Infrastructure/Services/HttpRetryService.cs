@@ -1,10 +1,10 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
-using fromAPIToExcel.Models;
-using fromAPIToExcel.Infrastructure.Configuration;
+using Otw.Clevvo.App.Members.Import.Models;
+using Otw.Clevvo.App.Members.Import.Infrastructure.Configuration;
 
-namespace fromAPIToExcel.Infrastructure.Services;
+namespace Otw.Clevvo.App.Members.Import.Infrastructure.Services;
 
 public class HttpRetryService
 {

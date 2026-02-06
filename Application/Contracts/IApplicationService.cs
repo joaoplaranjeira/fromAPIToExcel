@@ -1,4 +1,4 @@
-namespace fromAPIToExcel.Application.Contracts;
+namespace Otw.Clevvo.App.Members.Import.Application.Contracts;
 
 public interface IApplicationService
 {

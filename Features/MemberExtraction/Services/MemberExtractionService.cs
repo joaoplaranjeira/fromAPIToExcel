@@ -1,11 +1,14 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using fromAPIToExcel.Features.MemberExtraction.Contracts;
-using fromAPIToExcel.Infrastructure.Configuration;
-using fromAPIToExcel.Infrastructure.Services;
-using fromAPIToExcel.Models;
+using Otw.Clevvo.App.Members.Import.Features.MemberExtraction.Contracts;
+using Otw.Clevvo.App.Members.Import.Infrastructure.Configuration;
+using Otw.Clevvo.App.Members.Import.Infrastructure.Services;
+using Otw.Clevvo.App.Members.Import.Models;
+using Otw.Clevvo.App.Members.Import.Models.DTOs;
+using System.Text;
+using System.Globalization;
 
-namespace fromAPIToExcel.Features.MemberExtraction.Services;
+namespace Otw.Clevvo.App.Members.Import.Features.MemberExtraction.Services;
 
 public class MemberExtractionService : IMemberExtractionService
 {
@@ -145,10 +148,14 @@ public class MemberExtractionService : IMemberExtractionService
 
         _logger.LogInformation("✅ Extração concluída. Total de membros: {Count}", allMembers.Count);
         
+        // Apply gender deduction algorithm
+        var genderDeductions = await DeduceGendersAsync(allMembers);
+        
         return new ExtractionResult
         {
             Members = allMembers,
-            PagesProcessed = page - 1
+            PagesProcessed = page - 1,
+            GenderDeductions = genderDeductions
         };
     }
 
@@ -178,5 +185,197 @@ public class MemberExtractionService : IMemberExtractionService
             return meetsStartRequirement && meetsEndRequirement;
         }
         return false; // Exclude members without valid socio field
+    }
+
+    private async Task<List<GenderDeductionRecord>> DeduceGendersAsync(List<Member> members)
+    {
+        var deductions = new List<GenderDeductionRecord>();
+        
+        // Get members without gender
+        var membersWithoutGender = members
+            .Where(m => string.IsNullOrWhiteSpace(GetFieldValue(m, "gender")))
+            .ToList();
+        
+        if (!membersWithoutGender.Any())
+        {
+            _logger.LogInformation("ℹ️ Todos os membros já têm género definido. Nenhuma dedução necessária.");
+            return deductions;
+        }
+        
+        _logger.LogInformation("🔍 A iniciar dedução de género para {Count} membros sem género...", membersWithoutGender.Count);
+        
+        // Get existing members from database
+        var existingMembers = await GetExistingMembersFromDatabaseAsync();
+        
+        if (!existingMembers.Any())
+        {
+            _logger.LogWarning("⚠️ Não foi possível obter membros da base de dados para dedução de género.");
+            return deductions;
+        }
+        
+        _logger.LogInformation("📊 Base de dados consultada: {Count} membros encontrados", existingMembers.Count);
+        
+        // Build lookup by normalized first name
+        var genderByFirstName = BuildGenderLookup(existingMembers);
+        
+        foreach (var member in membersWithoutGender)
+        {
+            var firstName = GetFirstName(member.Title);
+            if (string.IsNullOrWhiteSpace(firstName))
+                continue;
+            
+            var normalizedFirstName = NormalizeName(firstName);
+            
+            // Try to find gender from lookup
+            if (genderByFirstName.TryGetValue(normalizedFirstName, out var gender))
+            {
+                // Update member's gender field
+                var genderField = member.Fields.FirstOrDefault(f => f.Attribute == "gender");
+                if (genderField != null)
+                {
+                    genderField.Value = gender;
+                }
+                else
+                {
+                    member.Fields.Add(new Field { Attribute = "gender", Value = gender });
+                }
+                
+                var memberCode = GetIntFieldValue(member, "socio");
+                
+                deductions.Add(new GenderDeductionRecord
+                {
+                    MemberCode = memberCode,
+                    FullName = CleanFullName(member.Title),
+                    DeducedGender = gender
+                });
+                
+                _logger.LogDebug("✅ Género deduzido para {MemberCode} - {FullName}: {Gender}", 
+                    memberCode, member.Title, gender);
+            }
+        }
+        
+        _logger.LogInformation("✅ Dedução de género concluída: {Count} géneros atribuídos", deductions.Count);
+        
+        return deductions;
+    }
+
+    private async Task<List<MemberDto>> GetExistingMembersFromDatabaseAsync()
+    {
+        try
+        {
+            var response = await _httpRetryService.GetWithRetryAsync<GetAllMembersResponse>(
+                _settings.Database.GetAllEndpoint, 
+                "obter membros existentes para dedução de género");
+            
+            if (response?.Success == true && response.Content != null)
+            {
+                return response.Content;
+            }
+            
+            return new List<MemberDto>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "❌ Erro ao obter membros existentes da base de dados para dedução de género.");
+            return new List<MemberDto>();
+        }
+    }
+
+    private Dictionary<string, string> BuildGenderLookup(List<MemberDto> existingMembers)
+    {
+        var lookup = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        
+        foreach (var member in existingMembers.Where(m => !string.IsNullOrWhiteSpace(m.Gender)))
+        {
+            var firstName = GetFirstNameFromFullName(member.FullName);
+            if (string.IsNullOrWhiteSpace(firstName))
+                continue;
+            
+            var normalizedFirstName = NormalizeName(firstName);
+            
+            // Only add if not already in dictionary (first occurrence wins)
+            if (!lookup.ContainsKey(normalizedFirstName))
+            {
+                lookup[normalizedFirstName] = member.Gender!;
+            }
+        }
+        
+        _logger.LogDebug("📋 Dicionário de géneros construído com {Count} entradas", lookup.Count);
+        
+        return lookup;
+    }
+
+    private string GetFirstName(string fullName)
+    {
+        var cleaned = CleanFullName(fullName);
+        return GetFirstNameFromFullName(cleaned);
+    }
+
+    private string GetFirstNameFromFullName(string fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName))
+            return string.Empty;
+        
+        var parts = fullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length > 0 ? parts[0] : string.Empty;
+    }
+
+    private string NormalizeName(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return string.Empty;
+        
+        // Remove accents
+        var normalizedString = name.Normalize(NormalizationForm.FormD);
+        var stringBuilder = new StringBuilder();
+
+        foreach (var c in normalizedString)
+        {
+            var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+            if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+            {
+                stringBuilder.Append(c);
+            }
+        }
+
+        return stringBuilder.ToString()
+            .Normalize(NormalizationForm.FormC)
+            .ToLowerInvariant()
+            .Trim();
+    }
+
+    private string? GetFieldValue(Member member, string attributeName)
+    {
+        var field = member.Fields.FirstOrDefault(f => f.Attribute == attributeName);
+        return field?.Value?.ToString();
+    }
+
+    private int GetIntFieldValue(Member member, string attributeName)
+    {
+        var value = GetFieldValue(member, attributeName);
+        if (int.TryParse(value, out var result))
+        {
+            return result;
+        }
+        return 0;
+    }
+
+    private string CleanFullName(string title)
+    {
+        if (string.IsNullOrEmpty(title)) return string.Empty;
+
+        // Remove the "#" character first
+        var cleanTitle = title.Replace("#", "").Trim();
+
+        // Check if it starts with a number followed by " - " pattern
+        var parts = cleanTitle.Split(" - ", 2);
+        if (parts.Length == 2 && int.TryParse(parts[0], out _))
+        {
+            // Return only the name part (after the number and hyphen)
+            return parts[1].Trim();
+        }
+
+        // If no number prefix, return as is
+        return cleanTitle;
     }
 }

@@ -1,12 +1,12 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using fromAPIToExcel.Features.DatabaseInsertion.Contracts;
-using fromAPIToExcel.Infrastructure.Configuration;
-using fromAPIToExcel.Infrastructure.Services;
-using fromAPIToExcel.Models;
-using fromAPIToExcel.Models.DTOs;
+using Otw.Clevvo.App.Members.Import.Features.DatabaseInsertion.Contracts;
+using Otw.Clevvo.App.Members.Import.Infrastructure.Configuration;
+using Otw.Clevvo.App.Members.Import.Infrastructure.Services;
+using Otw.Clevvo.App.Members.Import.Models;
+using Otw.Clevvo.App.Members.Import.Models.DTOs;
 
-namespace fromAPIToExcel.Features.DatabaseInsertion.Services;
+namespace Otw.Clevvo.App.Members.Import.Features.DatabaseInsertion.Services;
 
 public class DatabaseInsertionService : IDatabaseInsertionService
 {
@@ -140,7 +140,8 @@ public class DatabaseInsertionService : IDatabaseInsertionService
             MonthlyFee = ParseDecimalField(member, "monthly_fee"),
             JoinedUs = ParseDateField(member, "subscription_date", DateTime.Now),
             LastQuotaPaid = ParseNullableDateField(member, "last_paid_quote"),
-            PaymentLocal = GetFieldValue(member, "payment_local")
+            PaymentLocal = GetFieldValue(member, "payment_local"),
+            PhotoUrl = GetPhotoUrl(member)
         }).ToList();
     }
 
@@ -202,6 +203,33 @@ public class DatabaseInsertionService : IDatabaseInsertionService
         return null;
     }
 
+    private string? GetPhotoUrl(Member member)
+    {
+        var photoField = member.Fields.FirstOrDefault(f => f.Attribute == "photo");
+        if (photoField?.Value == null) return null;
+        
+        // The photo field is a JsonElement with nested properties
+        try
+        {
+            var photoJson = photoField.Value.ToString();
+            if (string.IsNullOrEmpty(photoJson)) return null;
+            
+            // Try to parse as JSON to get previewUrl
+            using var jsonDoc = System.Text.Json.JsonDocument.Parse(photoJson);
+            if (jsonDoc.RootElement.TryGetProperty("previewUrl", out var previewUrlElement))
+            {
+                return previewUrlElement.GetString();
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning("⚠️ Não foi possível extrair previewUrl do campo photo para o membro {MemberId}: {Error}", 
+                member.Id?.Value ?? 0, ex.Message);
+        }
+        
+        return null;
+    }
+
     private string CleanFullName(string title)
     {
         if (string.IsNullOrEmpty(title)) return string.Empty;
@@ -256,7 +284,8 @@ public class DatabaseInsertionService : IDatabaseInsertionService
                newData.MonthlyFee != existingData.MonthlyFee ||
                newData.JoinedUs != existingData.JoinedUs ||
                newData.LastQuotaPaid != existingData.LastQuotaPaid ||
-               newData.PaymentLocal != existingData.PaymentLocal;
+               newData.PaymentLocal != existingData.PaymentLocal ||
+               newData.PhotoUrl != existingData.PhotoUrl;
     }
 
     private List<string> GetChangedFields(MemberDto newData, MemberDto existingData)
@@ -295,6 +324,9 @@ public class DatabaseInsertionService : IDatabaseInsertionService
         
         if (newData.PaymentLocal != existingData.PaymentLocal)
             changedFields.Add($"Local Pagamento: '{existingData.PaymentLocal}' → '{newData.PaymentLocal}'");
+        
+        if (newData.PhotoUrl != existingData.PhotoUrl)
+            changedFields.Add($"Foto: '{existingData.PhotoUrl}' → '{newData.PhotoUrl}'");
         
         return changedFields;
     }

@@ -1,4 +1,11 @@
-namespace fromAPIToExcel.Models;
+namespace Otw.Clevvo.App.Members.Import.Models;
+
+public class GenderDeductionRecord
+{
+    public int MemberCode { get; set; }
+    public string FullName { get; set; } = string.Empty;
+    public string DeducedGender { get; set; } = string.Empty;
+}
 
 public class ProcessingSummary
 {
@@ -10,6 +17,10 @@ public class ProcessingSummary
     public int TotalMembersExtracted { get; set; }
     public int? StartFromMemberCode { get; set; }
     public int ExtractionPages { get; set; }
+    
+    // Gender Deduction Summary
+    public int GendersDeduced { get; set; }
+    public List<GenderDeductionRecord> GenderDeductions { get; set; } = new();
     
     // Database Summary
     public int MembersAlreadyInDatabase { get; set; }
@@ -51,6 +62,24 @@ public class ProcessingSummary
         }
         Console.WriteLine($"   • Páginas processadas: {ExtractionPages}");
         Console.WriteLine();
+        
+        // Gender Deduction summary
+        if (GendersDeduced > 0)
+        {
+            Console.WriteLine("🔍 DEDUÇÃO DE GÉNERO");
+            Console.WriteLine($"   • Total de géneros deduzidos: {GendersDeduced}");
+            Console.WriteLine();
+            
+            if (GenderDeductions.Any())
+            {
+                Console.WriteLine("   📋 Detalhes dos géneros deduzidos:");
+                foreach (var deduction in GenderDeductions.OrderBy(d => d.MemberCode))
+                {
+                    Console.WriteLine($"      • Sócio {deduction.MemberCode} - {deduction.FullName}: {deduction.DeducedGender}");
+                }
+                Console.WriteLine();
+            }
+        }
         
         // Database summary
         if (DatabaseOperationPerformed)

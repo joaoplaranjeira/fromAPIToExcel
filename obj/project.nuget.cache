@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "eF/MrrSHbqI=",
+  "dgSpecHash": "9o6ZjBqIb6U=",
   "success": true,
-  "projectFilePath": "/Users/joaolaranjeira/Projects/fromAPIToExcel/fromAPIToExcel.csproj",
+  "projectFilePath": "/Users/joaolaranjeira/Projects/otw.clevvo.app.members.import/otw.clevvo.app.members.import.csproj",
   "expectedPackageFiles": [
     "/Users/joaolaranjeira/.nuget/packages/closedxml/0.105.0/closedxml.0.105.0.nupkg.sha512",
     "/Users/joaolaranjeira/.nuget/packages/closedxml.parser/2.0.0/closedxml.parser.2.0.0.nupkg.sha512",
